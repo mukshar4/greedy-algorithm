@@ -14,8 +14,7 @@ public class TaskB {
         }
     }
 
-    public static ArrayList<ArrayList<Delivery>> assignDrivers(
-            ArrayList<Delivery> deliveries) {
+    public static ArrayList<ArrayList<Delivery>> assignDrivers(ArrayList<Delivery> deliveries) {
 
         ArrayList<ArrayList<Delivery>> driverSchedules =
                 new ArrayList<>();
@@ -39,14 +38,39 @@ public class TaskB {
                 
                 driverQueue.offer(newDriver);
 
-            } 
-            
+            }else{
+                //get the earliest aviable driver
+                DriverInfo earlisestDriver = driverQueue.peek();
 
+                //check if it works with the current order\
+                if(earlisestDriver.finishTime <= current.getStartTime()){
 
+                    //pull driver out of queue
+                    driverQueue.poll();
 
-       
-        
+                    //add new schedule to the driver
+                    driverSchedules.get(earlisestDriver.driverIndex).add(current);
 
+                    //since driver is free we will need to update new earliest time
+                    earlisestDriver.finishTime = current.getFinishTime();
+
+                    //add driver back into queue
+                    driverQueue.offer(earlisestDriver);
+
+                }else{
+                    ArrayList <Delivery> newSchedule = new ArrayList<>();
+                    newSchedule.add(current);
+                    driverSchedules.add(newSchedule);
+
+                    int driverIndex = driverSchedules.size() - 1;
+
+                    DriverInfo newDriver = new DriverInfo(driverIndex,current.getFinishTime());
+                
+                    driverQueue.offer(newDriver);
+                }
+
+            }
+        }
         return driverSchedules;
-}
+    }
 }
